@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Subset Sum</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="sb-admin-2/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- MetisMenu CSS -->
+    <link href="sb-admin-2/vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="sb-admin-2/dist/css/sb-admin-2.css" rel="stylesheet">
+
+    <!-- Morris Charts CSS -->
+    <link href="sb-admin-2/vendor/morrisjs/morris.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="sb-admin-2/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <div class="col-xs-12" style="padding-bottom:30px;">
+            <div class="row">
+                <div class="col-xs-12">
+                    <h1 class="page-header">Subset Sum Solver</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-table fa-fw"></i> Input Table
+                            <div class="pull-right">
+                                <a name="fold" data-toggle="collapse" data-target="#inputPanelBody"><i class="fa fa-chevron-up" style="color:#333333;"></i></a>
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body collapse in" id="inputPanelBody">
+                            <div class="table-responsive">
+                                <table class="table table-striped" id="inputTable">
+                                    <thead>
+                                        <tr>
+                                            <th width="45%">Name</th>
+                                            <th width="45%">Value</th>
+                                            <th width="10%"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><input class="form-control" id="newName"></td>
+                                            <td><input class="form-control" id="newValue"></td>
+                                            <td><button class="btn btn-primary" id="insertBtn"><a class="fa fa-plus" style="color:white;"></a></button></td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- /.table-responsive -->
+                            <div>
+                                <input id="desiredSum" class="" placeholder="Desired sum">
+                                <button id="processBtn" class="btn btn-primary" disabled>Process</button>
+                                <div class="pull-right">
+                                    <button id="resetBtn" class="btn btn-danger">Reset</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+
+                    <div class="panel panel-default" id="outputPanel">
+                        <div class="panel-heading">
+                            <i class="fa fa-table fa-fw"></i> Output Table
+                            <div class="pull-right">
+                                <a name="fold" data-toggle="collapse" data-target="#outputPanelBody"><i class="fa fa-chevron-up" style="color:#333333;"></i></a>
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body collapse in" id="outputPanelBody">
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+
+                </div>
+                <!-- /.col-lg-8 -->
+
+                
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /#page-wrapper -->
+
+        <div style="padding-bottom:30px;">
+        </div>
+
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- jQuery -->
+    <script src="sb-admin-2/vendor/jquery/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="sb-admin-2/vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="sb-admin-2/vendor/metisMenu/metisMenu.min.js"></script>
+
+    <!-- Morris Charts JavaScript -->
+    <script src="sb-admin-2/vendor/raphael/raphael.min.js"></script>
+    <script src="sb-admin-2/vendor/morrisjs/morris.min.js"></script>
+    <script src="sb-admin-2/data/morris-data.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="sb-admin-2/dist/js/sb-admin-2.js"></script>
+
+    <script>
+        data = [];
+        result = [];
+
+        function isNumeric(n) {
+            return !isNaN(parseFloat(n)) && isFinite(n);
+        }
+
+        function newElement(name, value) {
+            str =   "<tr>" + 
+                        "<td name='elmtName'>" + name + "</td>" + 
+                        "<td name='elmtValue'>" + value + "</td>" + 
+                        "<td>" + 
+                            "<button name='deleteBtn' class='btn btn-danger'><a class='fa fa-trash' style='color:white'></a></button>" + 
+                        "</td>" + 
+                    "</tr>";
+
+            return str;
+        }
+
+        function getInputData() {
+            data = [];
+            var valid = true;
+            $('#inputTable tbody tr').not(":last").each(function() {
+                var name = $(this).find("td").eq(0).html();
+                var value = $(this).find("td").eq(1).html();
+                if (isNumeric(value)) {
+                    data.push({
+                        'name' : name,
+                        'value' : parseFloat(value)
+                    });
+                } else {
+                    data = [];
+                    valid = false;
+                    return false;
+                }
+            });
+
+            return {
+                'valid' : valid,
+                'message' : valid ? 'OK' : 'Bad formatted input!'
+            };
+        }
+
+        function subsetSum(remaining, target, current) {
+            var sum = 0;
+            for (var i=0; i<current.length; i++) {
+                sum += current[i]['value'];
+            }
+
+            if (sum == target && current.length > 0) {
+                result.push(current);
+            }
+
+            if (remaining.length == 0) return;
+
+            for(var i=0; i<remaining.length; i++) {
+                var remaining2 = remaining.slice(i+1);
+                var current2 = current.concat([remaining[i]]);
+                subsetSum(remaining2, target, current2);
+            }
+        }
+
+        function generateResult() {
+            str = "";
+            for(var i=0; i<result.length; i++) {
+                str +=  "<div class='table-responsive' name='outputTable'>" +
+                            "<table class='table table-striped'>" + 
+                                "<thead>" + 
+                                    "<tr>" + 
+                                        "<th width='50%'>Name</th>" + 
+                                        "<th width='50%'>Value</th>"
+                                    "</tr>" + 
+                                "</thead>" +
+                                "<tbody>";
+
+                for(var j=0; j<result[i].length; j++) {
+                    str +=  "<tr>" + 
+                                "<td>" + result[i][j]['name'] + "</td>" + 
+                                "<td>" + result[i][j]['value'] + "</td>" +
+                                "</tr>"
+                }
+
+                str +=  "</tbody>" + 
+                            "</table>" + 
+                        "</div>";
+            }
+
+            $('#outputPanelBody').html(str);
+        }
+
+        $(document).ready(function() {
+
+            $('[name=fold]').click(function() {
+                icon = $(this).find("i");
+                if (icon.hasClass('fa-chevron-up')) {
+                    icon.removeClass('fa-chevron-up');
+                    icon.addClass('fa-chevron-down');
+                } else {
+                    icon.removeClass('fa-chevron-down');
+                    icon.addClass('fa-chevron-up');
+                }
+            });
+
+            $('#insertBtn').click(function() {
+                $('#inputTable tr').last().before(newElement($('#newName').val(), $('#newValue').val()));
+                $('#newName').val(null);
+                $('#newValue').val(null);
+                $('[name=deleteBtn]').last().click(function() {
+                    $(this).parent().parent().remove();
+                    if ($('#inputTable tbody tr').length <= 1) {
+                        $('#processBtn').prop('disabled', true);
+                    }
+                });
+                $('#processBtn').removeAttr("disabled");
+            });
+
+            $('#resetBtn').click(function() {
+                $('#inputTable tbody tr').not(":last").remove();
+                $('#desiredSum').val('');
+                $('#outputPanelBody').html('');
+                $('#processBtn').prop('disabled', true);
+                data = [];
+                result = [];
+            });
+
+            $('#processBtn').click(function() {
+
+                // Validasi input target
+                var target = $('#desiredSum').val();
+                if (target == '') {
+                    alert("Please specify target value!");
+                    $('#desiredSum').focus();
+                    return;
+                }
+                if (!isNumeric(target)) {
+                    alert("Bad formatted input!");
+                    $('#desiredSum').focus();
+                    return;
+                }
+
+                // Ambil data
+                $(this).prop('disabled', true);
+                var ret = getInputData();
+                if (!ret['valid']) {
+                    alert(ret['message']);
+                }
+
+                // Proses
+                result = [];
+                subsetSum(data, parseFloat(target), []);
+                generateResult();
+                $(this).removeAttr("disabled");
+                document.getElementById('outputPanel').scrollIntoView(true);
+            });
+
+        });
+
+    </script>
+
+</body>
+
+</html>
+
