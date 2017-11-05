@@ -200,6 +200,11 @@
 
         function generateResult() {
             str = "";
+            
+            str += "<div><b>Found " + result.length + " solution";
+            if (result.length > 1) str += "s";
+            str += ".</b></div>";
+
             for(var i=0; i<result.length; i++) {
                 str +=  "<div class='table-responsive' name='outputTable'>" +
                             "<table class='table table-striped'>" + 
@@ -212,13 +217,13 @@
                                 "<tbody>";
 
                 for(var j=0; j<result[i].length; j++) {
-                    str +=  "<tr>" + 
-                                "<td>" + result[i][j]['name'] + "</td>" + 
-                                "<td>" + result[i][j]['value'] + "</td>" +
-                                "</tr>"
+                    str +=          "<tr>" + 
+                                        "<td>" + result[i][j]['name'] + "</td>" + 
+                                        "<td>" + result[i][j]['value'] + "</td>" +
+                                    "</tr>";
                 }
 
-                str +=  "</tbody>" + 
+                str +=          "</tbody>" + 
                             "</table>" + 
                         "</div>";
             }
